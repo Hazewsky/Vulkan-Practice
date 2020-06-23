@@ -38,6 +38,10 @@ private:
 	VkSurfaceKHR surface;
 	VkSwapchainKHR swapchain;
 	std::vector<SwapchainImage> swapchainImages;
+
+	VkRenderPass renderPass;
+	// -- Pipeline -- //
+	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
 	// - Utility
@@ -57,6 +61,7 @@ private:
 	void createDebugMessenger();
 	void createSurface();
 	void createSwapChain();
+	void createRenderPass();
 	void createGraphicsPipeline();
 	// - Get Functions
 	void getPhysicalDevice();

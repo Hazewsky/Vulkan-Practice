@@ -17,6 +17,7 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		getPhysicalDevice();
 		createLogicalDevice();
 		createSwapChain();
+		createRenderPass();
 		createGraphicsPipeline();
 		
 	}
@@ -31,7 +32,10 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 
 void VulkanRenderer::cleanup()
 {
+	
 	vkDestroyPipeline(mainDevice.logicalDevice, graphicsPipeline, nullptr);
+	vkDestroyRenderPass(mainDevice.logicalDevice, renderPass, nullptr);
+	vkDestroyPipelineLayout(mainDevice.logicalDevice, pipelineLayout, nullptr);
 	for (auto &imageView : swapchainImages)
 	{
 		vkDestroyImageView(mainDevice.logicalDevice, imageView.imageView, nullptr);
@@ -317,6 +321,26 @@ void VulkanRenderer::createSwapChain()
 	}
 }
 
+void VulkanRenderer::createRenderPass()
+{
+	//Color attachment of render pass
+	VkAttachmentDescription colorAttachment = {};
+	colorAttachment.format = swapchainImageFormat;			//Format to use for attachment
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;		//Number of samples to write for multisampling
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;	//Describes what to do with attachment before rendering
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE; //Describes what to do with attachment after rendering
+	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+	//Framebuffer data will be stored as an image, but images can be given difference data layouts
+	//to give optimal use for certain operations so define appropriate formats for different 
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;		//image data layout before render pass starts
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;	//src of presentation. Image data layout after render pass (to change to)
+
+	VkRenderPassCreateInfo renderPassCreateInfo = {};
+	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+}
+
 void VulkanRenderer::createGraphicsPipeline()
 {
 	//read the SPIR-V code of shaders
@@ -342,11 +366,144 @@ void VulkanRenderer::createGraphicsPipeline()
 	fragmentShaderCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	fragmentShaderCreateInfo.pName = "main";
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertexShaderCreateInfo, fragmentShaderCreateInfo };
-	//create pipeline
+	//Geometry stage creation information
+	VkPipelineShaderStageCreateInfo geometryShaderCreateInfo = {};
+	geometryShaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	//geometryShaderCreateInfo.module = null;
+	geometryShaderCreateInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+	geometryShaderCreateInfo.pName = "main";
+
+
+	// -- 1. VERTEX INPUT (TODO: Put in vertex descriptions when resources created) --
+	VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
+	vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputCreateInfo.vertexBindingDescriptionCount = 0;
+	vertexInputCreateInfo.pVertexBindingDescriptions = nullptr; //List of Vertex BInding Descriptions (data spacing/stride info)
+	vertexInputCreateInfo.vertexAttributeDescriptionCount = 0;
+	vertexInputCreateInfo.pVertexAttributeDescriptions = nullptr; //List of Vertex Attribute Descriptions (data format, where to bind to\from)
+
+	// -- 2. INPUT ASSEMBLY --
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyCreateInfo = {};
+	inputAssemblyCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssemblyCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; //primitive type to assemble vertcies
+	inputAssemblyCreateInfo.primitiveRestartEnable = VK_FALSE; //allow overriding strip topology to start new primitives
+
+	// -- 3. VIEWPORT & SCISSOR --
+	//create a viewport info struct
+	VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)swapchainExtent.width;
+	viewport.height = (float)swapchainExtent.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	//create a scissor info struct
+	VkRect2D scissor = {};
+	scissor.offset = { 0,0 };			//offsets to use region from
+	scissor.extent = swapchainExtent;	//extent to describe region to use, starting at offset
+
+	VkPipelineViewportStateCreateInfo viewportCreateInfo = {};
+	viewportCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportCreateInfo.viewportCount = 1;
+	viewportCreateInfo.pViewports = &viewport;
+	viewportCreateInfo.scissorCount = 1;
+	viewportCreateInfo.pScissors = &scissor;
+
+	// -- 4. DYNAMIC STATES --
+	//Dynamic states to enable
+	//TODO::Implement dynamic states for pipeline
+	std::vector<VkDynamicState> dynamicStateEnables;
+	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);	//Dynamic viewport : Can resize in command buffer with vkCmdSetViewport(commandbuffer, 0, 1, &viewport);
+	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_SCISSOR);	//Dynamic Scissor: Can resize in command buffer with vkCmdSetScissor(commandBuffer, 0, 0, &scissor)
+
+	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+	dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+	dynamicStateCreateInfo.pDynamicStates = dynamicStateEnables.data();
+
+	// -- 5. TESSELATION --
+	//VkPipelineTessellationStateCreateInfo tesselationCreateInfo = {};
+	//tesselationCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+	
+
+	// -- 6. RASTERIZATION --
+	VkPipelineRasterizationStateCreateInfo rasterizationCreateInfo = {};
+	rasterizationCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizationCreateInfo.depthClampEnable = VK_FALSE;		//Change if fragments deyond near\far planes are clipped (default VK_TRUE) or clamped to plane(can mess realtime shadowing)
+	rasterizationCreateInfo.rasterizerDiscardEnable = VK_FALSE; //Whether to discard data and skip rasterizer. Never creates fragments, only suitable for pipeline without framebuffer output
+	rasterizationCreateInfo.polygonMode = VK_POLYGON_MODE_FILL; //How to handle filling points between vertices. If other then FIll -> requires GPU feature
+	rasterizationCreateInfo.lineWidth = 1;						//How thick lines should be when drawn. If value is other than 1 -> GPU feature required
+	rasterizationCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;	//Which face of a triangle to cull
+	rasterizationCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;//Winding to determine which size is front
+	rasterizationCreateInfo.depthBiasEnable = VK_FALSE;			//Whether to add depth bias to fragments (good for stopping "shadow acne" in shadow mapping)
+
+	// -- 7. MULTISAMPLING --
+	VkPipelineMultisampleStateCreateInfo multisampleCreateInfo = {};
+	multisampleCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampleCreateInfo.sampleShadingEnable = VK_FALSE; //enable multisample shading
+	multisampleCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT; //number of samples you take from the surrounding area. This case - single sample per fragment
+
+	// -- 8. COLOR BLENDING --
+	//BLean Attachment State (how blending is handled)
+	VkPipelineColorBlendAttachmentState colorState = {};
+	colorState.colorWriteMask = 
+		VK_COLOR_COMPONENT_R_BIT |
+		VK_COLOR_COMPONENT_G_BIT |
+		VK_COLOR_COMPONENT_B_BIT |
+		VK_COLOR_COMPONENT_A_BIT;		//set the mask to define color to be applied in blend
+	colorState.blendEnable = VK_TRUE;	//enable blending
+	//Blending uses equation: (srcColorBlendFactor * newColor) colorBlendOp (dstColorBlendFactor * oldColor)
+	//blend for color
+	colorState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA; //mult newColor by Alpha value
+	colorState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorState.colorBlendOp = VK_BLEND_OP_ADD;
+	//Summarized: (VK_BLEND_FACTOR_SRC_ALPHA * new color) + (VK_BLEND_FACTOR_SRC_ONE_MINUS_ALPHA * old color);
+	//			  (new color alpha * new color) + ((1 - new color alpha) * old color)
+	//blend for alpha
+	colorState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; //get rid of the old alpha and replace with a new one
+	colorState.alphaBlendOp = VK_BLEND_OP_ADD;
+	//Summarized: (1 * new alpha) + (0 * old alpha) = new alpha
+
+	VkPipelineColorBlendStateCreateInfo colorBlendingCreateInfo = {};
+	colorBlendingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlendingCreateInfo.logicOpEnable = VK_FALSE; //alternative to calculations is to use logical operations
+	//colorBlendingCreateInfo.logicOp = VK_LOGIC_OP_COPY;
+	colorBlendingCreateInfo.attachmentCount = 1;
+	colorBlendingCreateInfo.pAttachments = &colorState; 
+	//colorBlendingCreateInfo.blendConstants[0] = //blend constants of size 4
+
+	// -- 9. PIPELINE LAYOUT -- (TODO: Apply Future Descriptor Set Layouts)
+	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutCreateInfo.setLayoutCount = 0;
+	pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+	pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+	pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+
+	VkResult result = vkCreatePipelineLayout(mainDevice.logicalDevice, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Enable to create pipeline layout!");
+	}
+	// -- 10. DEPTH STENCIL TESTING
+	// TODO: Set up depth stencil testing
+
+
+	//CREATE PIPELINE
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.pStages = shaderStages;
-
+	graphicsPipelineCreateInfo.layout = pipelineLayout;
+	graphicsPipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
+	graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssemblyCreateInfo;
+	graphicsPipelineCreateInfo.pViewportState = &viewportCreateInfo;
+	graphicsPipelineCreateInfo.pDynamicState = &dynamicStateCreateInfo;
+	graphicsPipelineCreateInfo.pRasterizationState = &rasterizationCreateInfo;
+	graphicsPipelineCreateInfo.pMultisampleState = &multisampleCreateInfo;
+	graphicsPipelineCreateInfo.pColorBlendState = &colorBlendingCreateInfo;
+	
 	//vkCreateGraphicsPipelines(mainDevice.logicalDevice, nullptr, 1, &graphicsPipelineCreateInfo, nullptr, )
 	//we don't need shader modules anymore after pipeline creation -> delete 'em
 	vkDestroyShaderModule(mainDevice.logicalDevice, fragmentShaderModule, nullptr);
@@ -587,6 +744,9 @@ bool VulkanRenderer::checkDeviceSuitable(VkPhysicalDevice device)
 	vkGetPhysicalDeviceProperties(device, &deviceProperties);
 	//Information about what device can do (geo shader, tess shader, wide lines, etc)
 	VkPhysicalDeviceFeatures deviceFeatures;
+	//Enable Rasterization Depth clamp
+	//deviceFeatures.depthClamp = VK_TRUE;
+
 	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
 	auto indices = getQueueFamilies(device);
