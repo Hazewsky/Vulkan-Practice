@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
+#include <array>
 
 #include "Utilities.h"
 
