@@ -19,6 +19,7 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createSwapChain();
 		createRenderPass();
 		createGraphicsPipeline();
+		createFramebuffers();
 		
 	}
 	catch (const std::runtime_error &e)
@@ -33,6 +34,13 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 void VulkanRenderer::cleanup()
 {
 	
+	vkDestroyCommandPool(mainDevice.logicalDevice, graphicsCommandPool, nullptr);
+	for (auto &frameBuffer : swapchainFramebuffers)
+	{
+		vkDestroyFramebuffer(mainDevice.logicalDevice, frameBuffer, nullptr);
+	}
+	swapchainFramebuffers.clear();
+
 	vkDestroyPipeline(mainDevice.logicalDevice, graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(mainDevice.logicalDevice, pipelineLayout, nullptr);
 	vkDestroyRenderPass(mainDevice.logicalDevice, renderPass, nullptr);
@@ -151,6 +159,8 @@ void VulkanRenderer::createLogicalDevice()
 {
 	//get the queue family indices for the chosen physical devices
 	QueueFamilyIndices indices = getQueueFamilies(mainDevice.physicalDevice);
+	//store queue family indices for a later use
+	queueFamilyIndices = indices;
 	//vecotr ffor queue creation infos
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	//set for queue family indices. it's only for unique ints, 
@@ -271,14 +281,15 @@ void VulkanRenderer::createSwapChain()
 	createInfo.clipped = VK_TRUE;												//whether to clip parts of image not in view (e.g. behind another window, off screen, etc)
 	//queues section
 	//Get qeueu family indices
-	QueueFamilyIndices indices = getQueueFamilies(mainDevice.physicalDevice);
+	//QueueFamilyIndices indices = getQueueFamilies(mainDevice.physicalDevice);
+	
 	//if graphics & presentation families different, then swapchain must let images be shared between families
-	if (indices.graphicsFamily != indices.presentationFamily)
+	if (queueFamilyIndices.graphicsFamily != queueFamilyIndices.presentationFamily)
 	{
-		uint32_t queueFamilyIndices[] = {(uint32_t)indices.graphicsFamily, (uint32_t)indices.presentationFamily};
+		uint32_t indices[] = {(uint32_t)queueFamilyIndices.graphicsFamily, (uint32_t)queueFamilyIndices.presentationFamily};
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT; //image share handling between multiple queues
 		createInfo.queueFamilyIndexCount = 2; //only graphics family & presentation family can share image
-		createInfo.pQueueFamilyIndices = queueFamilyIndices; //array of queues to share between
+		createInfo.pQueueFamilyIndices = indices; //array of queues to share between
 	}
 	//if they are equal - exclusive mode will be enough
 	else
@@ -571,6 +582,45 @@ void VulkanRenderer::createGraphicsPipeline()
 	vkDestroyShaderModule(mainDevice.logicalDevice, fragmentShaderModule, nullptr);
 	vkDestroyShaderModule(mainDevice.logicalDevice, vertexShaderModule, nullptr);
 	
+}
+
+void VulkanRenderer::createFramebuffers()
+{
+	//resize framebuffer count to == swapchain image count
+	swapchainFramebuffers.resize(swapchainImages.size());
+	//create for each swap chain image
+	for (size_t i = 0; i < swapchainFramebuffers.size(); i++)
+	{
+		std::array<VkImageView, 1> attachments = { swapchainImages[i].imageView };
+
+		VkFramebufferCreateInfo createInfo;
+		createInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		createInfo.renderPass = renderPass;										//Render pass layout the framebuffer will be used with
+		createInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		createInfo.pAttachments = attachments.data();							//List of attachments (1:1 with render pass)
+		createInfo.width = swapchainExtent.width;								//Framebuffer width
+		createInfo.height = swapchainExtent.height;								//Framebuffer height
+		createInfo.layers = 1;													//Framebuffer layers
+
+		VkResult result = vkCreateFramebuffer(mainDevice.logicalDevice, &createInfo, nullptr, &swapchainFramebuffers[i]);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Enable to create framebuffer!");
+		}
+	}
+}
+
+void VulkanRenderer::createCommandPool()
+{
+	VkCommandPoolCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	createInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily; //Queue family type that buffers from this command will use
+	
+	VkResult result = vkCreateCommandPool(mainDevice.logicalDevice, &createInfo, nullptr, &graphicsCommandPool);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Unable to create graphics command pool");
+	}
 }
 
 //best format is subjective but let's use 

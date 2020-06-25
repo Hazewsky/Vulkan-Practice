@@ -33,19 +33,26 @@ private:
 		VkPhysicalDevice physicalDevice;
 		VkDevice logicalDevice;
 	} mainDevice;
+	// -- Queues -- //
 	VkQueue graphicsQueue;
 	VkQueue presentationQueue;
+	QueueFamilyIndices queueFamilyIndices;
+
 	VkDebugUtilsMessengerEXT debugMessenger;
 	VkSurfaceKHR surface;
 	VkSwapchainKHR swapchain;
 	std::vector<SwapchainImage> swapchainImages;
+	std::vector<VkFramebuffer> swapchainFramebuffers;
 
 	VkRenderPass renderPass;
 	// -- Pipeline -- //
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// - Utility
+	// -- Pools -- //
+	VkCommandPool graphicsCommandPool;
+
+	// -- Utility -- //
 	VkFormat swapchainImageFormat;
 	VkExtent2D swapchainExtent;
 	//set up vlaidation layers
@@ -64,6 +71,9 @@ private:
 	void createSwapChain();
 	void createRenderPass();
 	void createGraphicsPipeline();
+	void createFramebuffers();
+	void createCommandPool();
+
 	// - Get Functions
 	void getPhysicalDevice();
 
