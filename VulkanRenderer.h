@@ -10,6 +10,7 @@
 #include <set>
 #include <array>
 
+#include "Mesh.h"
 #include "Utilities.h"
 
 class VulkanRenderer
@@ -27,6 +28,10 @@ private:
 	GLFWwindow* window;
 	//use to control the maximum number of images being drawn on a queue.
 	int currentFrame = 0;
+
+	//Scene Objects
+	Mesh firstMesh;
+
 	//Vulkan Components
 	//instance
 	//VkXXX - type, vkXXXX - function
