@@ -73,10 +73,14 @@ void Mesh::createVertexBuffer(std::vector<Vertex>* vertices)
 	vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
 
 	//MAP MEMORY TO VERTEX BUFFER
-	void * data;															// 1. Create pointer to a point in normal memory
-	vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);	// 2. "Map" the vertex buffer memory to that pointer
-	memcpy(data, vertices->data(), (size_t)bufferInfo.size);				// 3. Copy the data
-	vkUnmapMemory(device, vertexBufferMemory);								// 4. Unmap the VertexBUfferMemory
+	void * data;																		// 1. Create pointer to a point in normal memory
+	result = vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);		// 2. "Map" the vertex buffer memory to that pointer
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to map memory for vertex buffer!");
+	}
+	memcpy(data, vertices->data(), (size_t)bufferInfo.size);							// 3. Copy the data
+	vkUnmapMemory(device, vertexBufferMemory);											// 4. Unmap the VertexBUfferMemory
 }
 
 void Mesh::DestroyVertexBuffer()
@@ -98,6 +102,7 @@ uint32_t Mesh::findMemoryTypeIndex(uint32_t allowedTypes, VkMemoryPropertyFlags 
 			&& (memoryProps.memoryTypes[i].propertyFlags & properties) == properties)	//check if ALL properties are presented at this memory index
 		{
 			//this memory type is valied, so return its index
+			return i;
 		}
 	}
 

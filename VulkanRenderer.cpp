@@ -20,7 +20,7 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		//Create a mesh 
 		std::vector<Vertex> meshVertices =
 		{
-			{{0.0, -0.4, 0.0}, {1.0f, 0.0f, 0.0f}},
+			{{0.4, -0.4, 0.0}, {1.0f, 0.0f, 0.0f}},
 			{{0.4, 0.4, 0.0}, {0.0f, 1.0f, 0.0f}},
 			{{-0.4, 0.4, 0.0}, {0.0f, 0.0f, 1.0f}},
 
@@ -36,13 +36,14 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createFramebuffers();
 		createCommandPool();
 		createCommandBuffers();
+		recordCommands();
 		createSynchronization();
 		
 	}
 	catch (const std::runtime_error &e)
 	{
 		printf("ERROR: %s \n", e.what());
-		return EXIT_FAILURE; //1
+		//return EXIT_FAILURE; //1
 	}
 
 	return EXIT_SUCCESS; //0
@@ -586,18 +587,18 @@ void VulkanRenderer::createGraphicsPipeline()
 	// -- 4. DYNAMIC STATES --
 	//Dynamic states to enable
 	//TODO::Implement dynamic states for pipeline
-	std::vector<VkDynamicState> dynamicStateEnables;
-	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);	//Dynamic viewport : Can resize in command buffer with vkCmdSetViewport(commandbuffer, 0, 1, &viewport);
-	dynamicStateEnables.push_back(VK_DYNAMIC_STATE_SCISSOR);	//Dynamic Scissor: Can resize in command buffer with vkCmdSetScissor(commandBuffer, 0, 0, &scissor)
+	//std::vector<VkDynamicState> dynamicStateEnables;
+	//dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);	//Dynamic viewport : Can resize in command buffer with vkCmdSetViewport(commandbuffer, 0, 1, &viewport);
+	//dynamicStateEnables.push_back(VK_DYNAMIC_STATE_SCISSOR);	//Dynamic Scissor: Can resize in command buffer with vkCmdSetScissor(commandBuffer, 0, 0, &scissor)
 
-	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
-	dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
-	dynamicStateCreateInfo.pDynamicStates = dynamicStateEnables.data();
+	//VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+	//dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	//dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+	//dynamicStateCreateInfo.pDynamicStates = dynamicStateEnables.data();
 
 	// -- 5. TESSELATION --
-	VkPipelineTessellationStateCreateInfo tesselationCreateInfo = {};
-	tesselationCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+	//VkPipelineTessellationStateCreateInfo tesselationCreateInfo = {};
+	//tesselationCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
 	
 
 	// -- 6. RASTERIZATION --
@@ -673,7 +674,7 @@ void VulkanRenderer::createGraphicsPipeline()
 	graphicsPipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;		//All the fixed function pipeline states
 	graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssemblyCreateInfo;
 	graphicsPipelineCreateInfo.pViewportState = &viewportCreateInfo;
-	graphicsPipelineCreateInfo.pDynamicState = &dynamicStateCreateInfo;
+	graphicsPipelineCreateInfo.pDynamicState = /*&dynamicStateCreateInfo*/nullptr;
 	graphicsPipelineCreateInfo.pTessellationState = nullptr;					//TODO: Implement tesselation state
 	graphicsPipelineCreateInfo.pRasterizationState = &rasterizationCreateInfo;
 	graphicsPipelineCreateInfo.pMultisampleState = &multisampleCreateInfo;
@@ -706,7 +707,7 @@ void VulkanRenderer::createFramebuffers()
 	{
 		std::array<VkImageView, 1> attachments = { swapchainImages[i].imageView };
 
-		VkFramebufferCreateInfo createInfo;
+		VkFramebufferCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		createInfo.renderPass = renderPass;										//Render pass layout the framebuffer will be used with
 		createInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
