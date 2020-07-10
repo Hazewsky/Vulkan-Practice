@@ -67,6 +67,13 @@ void Mesh::createVertexBuffer(VkQueue transferQueue, VkCommandPool transferComma
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		&vertexBuffer, &vertexBufferMemory);
+
+	//Copy staging buffer to vertex buffer on GPU
+	copyBuffer(device, transferQueue, transferCommandPool, stagingBuffer, vertexBuffer, bufferSize);
+
+	//Clean up stagin buffer parts
+	vkDestroyBuffer(device, stagingBuffer, nullptr);
+	vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
 void Mesh::DestroyVertexBuffer()

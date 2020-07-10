@@ -142,5 +142,49 @@ static void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device,
 static void copyBuffer(VkDevice device, VkQueue transferQueue, VkCommandPool transferCommandPool,
 	VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize)
 {
+	//Command buffer to hold transfer command
+	VkCommandBuffer transferCommandBuffer;
 
+	//Command buffer details
+	VkCommandBufferAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandPool = transferCommandPool;
+	allocInfo.commandBufferCount = 1;
+
+	//Allocate command buffer from pool
+	vkAllocateCommandBuffers(device, &allocInfo, &transferCommandBuffer);
+
+	// Information to begin the command buffer record
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; //We've only using the command buffer once, so set up for one time submit
+
+	//Begin recording transfer commands
+	vkBeginCommandBuffer(transferCommandBuffer, &beginInfo);
+
+	//Region of data to copy from and to
+	VkBufferCopy bufferCopyRegion = {};
+	bufferCopyRegion.srcOffset = 0;
+	bufferCopyRegion.dstOffset = 0;
+	bufferCopyRegion.size = bufferSize;
+
+	//Command to copy src buffer to dst buffer
+	vkCmdCopyBuffer(transferCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopyRegion);
+
+	//End commands
+	vkEndCommandBuffer(transferCommandBuffer);
+
+	//Queue submission information
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &transferCommandBuffer;
+	
+	//Submit transfer command to transfer queue (graphics queue) and wait until it finishes
+	vkQueueSubmit(transferQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(transferQueue);
+
+	//Free temp command buffer back to pool
+	vkFreeCommandBuffers(device, transferCommandPool, 1, &transferCommandBuffer);
 }
