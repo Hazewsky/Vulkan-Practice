@@ -41,8 +41,13 @@ VkBuffer Mesh::getIndexBuffer()
 
 void Mesh::cleanup()
 {
-	destroyIndexBuffer();
-	DestroyVertexBuffer();
+	//Index buffer destroy
+	vkDestroyBuffer(device, indexBuffer, nullptr);
+	vkFreeMemory(device, indexBufferMemory, nullptr);
+
+	//Vertex buffer destroy
+	vkDestroyBuffer(device, vertexBuffer, nullptr);
+	vkFreeMemory(device, vertexBufferMemory, nullptr);
 }
 
 
@@ -121,7 +126,7 @@ void Mesh::createIndexBuffer(VkQueue transferQueue, VkCommandPool transferComman
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		&indexBuffer, &indexBufferMemory);
 
-	//Copy stagin buffer to index buffer on GPU
+	//Copy from staging buffer to GPU access buffer
 	copyBuffer(device, transferQueue, transferCommandPool, stagingBuffer, indexBuffer, bufferSize);
 
 	//Clean up staging buffer parts
@@ -129,15 +134,4 @@ void Mesh::createIndexBuffer(VkQueue transferQueue, VkCommandPool transferComman
 	vkFreeMemory(device, stagingBuffer, nullptr);
 }
 
-void Mesh::DestroyVertexBuffer()
-{
-	vkDestroyBuffer(device, vertexBuffer, nullptr);
-	vkFreeMemory(device, vertexBufferMemory, nullptr);
-}
-
-void Mesh::destroyIndexBuffer()
-{
-	vkDestroyBuffer(device, indexBuffer, nullptr);
-	vkFreeMemory(device, indexBufferMemory, nullptr);
-}
 

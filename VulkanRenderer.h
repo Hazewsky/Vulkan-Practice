@@ -30,7 +30,7 @@ private:
 	int currentFrame = 0;
 
 	//Scene Objects
-	Mesh firstMesh;
+	std::vector<Mesh> meshes;
 
 	//Vulkan Components
 	//instance
