@@ -18,6 +18,7 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createLogicalDevice();
 		createSwapChain();
 		createRenderPass();
+		createDescriptorSetLayout();
 		createGraphicsPipeline();
 		createFramebuffers();
 		createCommandPool();
@@ -34,10 +35,11 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 
 		std::vector<Vertex> meshVertices2 =
 		{
-			{{0.1, -0.4, 0.0}, {1.0f, 0.0f, 0.0f}},		// 0
-			{{0.1, 0.4, 0.0}, {0.0f, 1.0f, 0.0f}},		// 1
-			{{0.9, 0.4, 0.0}, {0.0f, 0.0f, 1.0f}},		// 2
-			{{0.9, -0.4, 0.0}, {0.57f, 0.35f, 0.85f}},	// 3
+			{{0.9, -0.4, 0.0}, {0.75f, 0.23f, 0.11f}},		// 0
+			{{0.9, 0.4, 0.0}, {1.0f, 0.2f, 0.5f}},		// 1
+			{{0.1, 0.4, 0.0}, {0.0f, 1.0f, 1.0f}},		// 2
+			{{0.1, -0.4, 0.0}, {0.37f, 0.2f, 0.93f}},	// 3
+			
 		};
 
 		//index data
@@ -124,10 +126,13 @@ void VulkanRenderer::draw()
 
 void VulkanRenderer::cleanup()
 {
+	
 	//wait till the device become idle to safely destroy semaphores & pools
 	vkDeviceWaitIdle(mainDevice.logicalDevice);
 	//same for queue
 	//vkQueueWaitIdle(graphicsQueue);
+
+	vkDestroyDescriptorSetLayout(mainDevice.logicalDevice, descriptorSetLayout, nullptr);
 
 	for (auto & mesh : meshes)
 	{
@@ -156,6 +161,7 @@ void VulkanRenderer::cleanup()
 
 	vkDestroyPipeline(mainDevice.logicalDevice, graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(mainDevice.logicalDevice, pipelineLayout, nullptr);
+
 	vkDestroyRenderPass(mainDevice.logicalDevice, renderPass, nullptr);
 	
 	for (auto &imageView : swapchainImages)
@@ -516,6 +522,36 @@ void VulkanRenderer::createRenderPass()
 	}
 }
 
+void VulkanRenderer::createDescriptorSetLayout()
+{
+	//MVP BInding info
+	VkDescriptorSetLayoutBinding mvpLayoutBinding = {};
+	mvpLayoutBinding.binding = 0;											//Binding point in shader (designated by binding number in shader)
+	mvpLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;	//Type of descriptor(uniform, dynamic uniform, image samples
+	mvpLayoutBinding.descriptorCount = 1;									//Number of descriptor for binding
+	mvpLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;				//Shader stage to bind to (vertex, geometry, fragment, etc)
+	mvpLayoutBinding.pImmutableSamplers = nullptr;							//For Texture: can make sampler data immutable by specifying in layout. Only the SAMPLER. 
+																			//The ImageView it samples from can still be changed
+
+	std::array<VkDescriptorSetLayoutBinding, 1> layoutBindings = {mvpLayoutBinding};
+	//Create descriptor set layout with given bindings
+	VkDescriptorSetLayoutCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	createInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());	//Number of binding infos
+	createInfo.pBindings = layoutBindings.data();							//Array of binding infos
+
+	//Create descriptor set layout
+	VkResult result = vkCreateDescriptorSetLayout(mainDevice.logicalDevice, &createInfo, nullptr, &descriptorSetLayout);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create descriptor set layout!");
+	}
+	else
+	{
+		printf("SUCCESS: Descriptor set layout created successfully!");
+	}
+}
+
 void VulkanRenderer::createGraphicsPipeline()
 {
 	//read the SPIR-V code of shaders
@@ -851,7 +887,7 @@ void VulkanRenderer::recordCommands()
 			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 			//record drawing all meshes
-			for (size_t j = 0; j < meshes.size; j++)
+			for (size_t j = 0; j < meshes.size(); j++)
 			{
 				//use vertex buffer
 				VkBuffer vertexBuffers[] = { meshes[j].getVertexBuffer() };							//Buffers to bind

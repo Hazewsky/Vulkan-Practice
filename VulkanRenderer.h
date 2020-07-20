@@ -29,10 +29,17 @@ private:
 	//use to control the maximum number of images being drawn on a queue.
 	int currentFrame = 0;
 
-	//Scene Objects
+	// -- Scene Objects -- //
 	std::vector<Mesh> meshes;
 
-	//Vulkan Components
+	// -- Scene Settings -- //
+	struct MVP
+	{
+		glm::mat4 projection;
+		glm::mat4 view;
+		glm::mat4 model;
+	} mvp;
+	// -- Vulkan Components -- //
 	//instance
 	//VkXXX - type, vkXXXX - function
 	VkInstance instance;
@@ -55,6 +62,10 @@ private:
 	std::vector<VkCommandBuffer> commandBuffers;
 
 	VkRenderPass renderPass;
+
+	// -- Descriptors -- //
+	VkDescriptorSetLayout descriptorSetLayout;
+
 	// -- Pipeline -- //
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
@@ -86,6 +97,7 @@ private:
 	void createSurface();
 	void createSwapChain();
 	void createRenderPass();
+	void createDescriptorSetLayout();
 	void createGraphicsPipeline();
 	void createFramebuffers();
 	void createCommandPool();
