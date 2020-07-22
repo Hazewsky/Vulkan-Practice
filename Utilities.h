@@ -97,7 +97,7 @@ static uint32_t findMemoryTypeIndex(VkPhysicalDevice physicalDevice, uint32_t al
 }
 
 
-static void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, 
+static VkResult createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, 
 	VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage,
 	VkMemoryPropertyFlags bufferProperties, VkBuffer *buffer, VkDeviceMemory *bufferMemory)
 {
@@ -129,14 +129,17 @@ static void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device,
 																						//VK_MEMORY_PROPERTY_HOST_COHERENT_BIT: Allows placement of data straight into buffer after mapping
 																						//VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT: ONLY GPU can interact with memory\data
 																						//(otherwise we've have to specify manually with flushMemotyRanges\invalidateMemoryRanges
-//Allocate memory to VkDeviceMemory
+	//Allocate memory to VkDeviceMemory
 	result = vkAllocateMemory(device, &memoryAllocInfo, nullptr, bufferMemory);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate memory for vertex buffer!");
 	}
+
 	//Allocate(Bind) memory to given vertex buffer
 	vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+
+	return result;
 }
 
 static void copyBuffer(VkDevice device, VkQueue transferQueue, VkCommandPool transferCommandPool,

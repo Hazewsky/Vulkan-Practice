@@ -9,6 +9,7 @@
 #include <iostream>
 #include <set>
 #include <array>
+#include <string>
 
 #include "Mesh.h"
 #include "Utilities.h"
@@ -65,6 +66,11 @@ private:
 
 	// -- Descriptors -- //
 	VkDescriptorSetLayout descriptorSetLayout;
+	VkDescriptorPool descriptorPool;
+	std::vector<VkDescriptorSet> descriptorSets;
+
+	std::vector<VkBuffer> uniformBuffer;
+	std::vector<VkDeviceMemory> uniformBufferMemory;
 
 	// -- Pipeline -- //
 	VkPipelineLayout pipelineLayout;
@@ -104,7 +110,9 @@ private:
 	void createCommandBuffers();
 	void createSynchronization();
 
-
+	void createUniformBuffers();
+	void createDescriptorPool();
+	void createDescriptorSets();
 
 	// -- Record Functions -- //
 	void recordCommands();

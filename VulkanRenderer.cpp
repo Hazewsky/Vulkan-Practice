@@ -56,6 +56,10 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 
 
 		createCommandBuffers();
+		createUniformBuffers();
+		createDescriptorPool();
+		createDescriptorSets();
+
 		recordCommands();
 		createSynchronization();
 		
@@ -132,7 +136,16 @@ void VulkanRenderer::cleanup()
 	//same for queue
 	//vkQueueWaitIdle(graphicsQueue);
 
+
+	//don't need to free Descriptor Sets because they're be automatically released after Descriptor Pool destroy
+	vkDestroyDescriptorPool(mainDevice.logicalDevice, descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(mainDevice.logicalDevice, descriptorSetLayout, nullptr);
+
+	for (size_t i = 0; i < uniformBuffer.size(); i++)
+	{
+		vkDestroyBuffer(mainDevice.logicalDevice, uniformBuffer[i], nullptr);
+		vkFreeMemory(mainDevice.logicalDevice, uniformBufferMemory[i], nullptr);
+	}
 
 	for (auto & mesh : meshes)
 	{
@@ -705,11 +718,11 @@ void VulkanRenderer::createGraphicsPipeline()
 	colorBlendingCreateInfo.pAttachments = &colorState; 
 	//colorBlendingCreateInfo.blendConstants[0] = //blend constants of size 4
 
-	// -- 9. PIPELINE LAYOUT -- (TODO: Apply Future Descriptor Set Layouts)
+	// -- 9. PIPELINE LAYOUT --
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutCreateInfo.setLayoutCount = 0;
-	pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+	pipelineLayoutCreateInfo.setLayoutCount = 1;
+	pipelineLayoutCreateInfo.pSetLayouts = &descriptorSetLayout;
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
 	pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
 
@@ -845,6 +858,75 @@ void VulkanRenderer::createSynchronization()
 		}
 	}
 	
+}
+
+void VulkanRenderer::createUniformBuffers()
+{
+	// Buufer size will size of all three variables (will offset to access)
+	VkDeviceSize bufferSize = sizeof(MVP);
+
+	// One uniform buffer for each image (and by extension, command buffer)
+	uniformBuffer.resize(swapchainImages.size());
+	uniformBufferMemory.resize(swapchainImages.size());
+
+	// Create Uniform Buffers
+	for (size_t i = 0; i < swapchainImages.size(); i++)
+	{
+		createBuffer(mainDevice.physicalDevice, mainDevice.logicalDevice, bufferSize,
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT || VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&uniformBuffer[i], &uniformBufferMemory[i]);
+	}
+	
+}
+
+void VulkanRenderer::createDescriptorPool()
+{
+	//Type of descriptors and how many DESCRIPTORS, not discriptor sets (combined makes the pool size, a part of the pool)
+	VkDescriptorPoolSize poolSize = {};
+	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSize.descriptorCount = static_cast<uint32_t>(uniformBuffer.size());
+
+	//Data to create Descriptor Pool
+	VkDescriptorPoolCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	createInfo.maxSets = static_cast<uint32_t>(uniformBuffer.size());	//Max number of Descriptor sSets that can be created from pool
+	createInfo.poolSizeCount = 1;										//Amount of Pool Sizes (parts) being passed
+	createInfo.pPoolSizes = &poolSize;									//Pool Sizes (parts) to create pool with
+
+	VkResult result = vkCreateDescriptorPool(mainDevice.logicalDevice, &createInfo, nullptr, &descriptorPool);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create descriptor pool!");
+	}
+
+}
+
+void VulkanRenderer::createDescriptorSets()
+{
+	// Resize Descriptor Set list so one for every buffer
+	descriptorSets.resize(uniformBuffer.size());
+
+	std::vector<VkDescriptorSetLayout> setLayouts(uniformBuffer.size(), descriptorSetLayout);
+
+	// Data to allocate Descriptor Set
+	VkDescriptorSetAllocateInfo allocateInfo = {};
+	allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocateInfo.descriptorPool = descriptorPool;									//Pool to allocate Descriptor Set from
+	allocateInfo.descriptorSetCount = static_cast<uint32_t>(uniformBuffer.size());	//Number of sets tro allocate
+	allocateInfo.pSetLayouts = setLayouts.data();									//Layouts to use to allocate set (1:1 relationship)
+	
+	//Allocae descriptor sets (multiple)
+	VkResult result = vkAllocateDescriptorSets(mainDevice.logicalDevice, &allocateInfo, descriptorSets.data());
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to allocate descriptor sets for buffer");
+	}
+	else
+	{
+		printf("Successfully created descriptor sets");
+	}
+	 
 }
 
 void VulkanRenderer::recordCommands()
