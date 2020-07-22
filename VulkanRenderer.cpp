@@ -888,7 +888,7 @@ void VulkanRenderer::createUniformBuffers()
 	{
 		createBuffer(mainDevice.physicalDevice, mainDevice.logicalDevice, bufferSize,
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT || VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&uniformBuffer[i], &uniformBufferMemory[i]);
 	}
 	
@@ -965,9 +965,13 @@ void VulkanRenderer::createDescriptorSets()
 void VulkanRenderer::updateUniformBuffer(uint32_t imageIndex)
 {
 	void* data;
-	vkMapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex], 0, sizeof(MVP), 0, &data);
-	memcpy(data, &mvp, sizeof(MVP));
-	vkUnmapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex]);
+	VkResult result = vkMapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex], 0, sizeof(MVP), 0, &data);
+	if (result == VK_SUCCESS)
+	{
+		memcpy(data, &mvp, sizeof(MVP));
+		vkUnmapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex]);
+	}
+	
 }
 
 void VulkanRenderer::recordCommands()
