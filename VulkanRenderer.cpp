@@ -23,6 +23,14 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createFramebuffers();
 		createCommandPool();
 
+		//Set up Matrices
+		mvp.projection = glm::perspective(glm::radians(45.0f), 
+			(float) swapchainExtent.width / (float) swapchainExtent.height,
+			0.1f, 100.0f);
+		mvp.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		mvp.model = glm::mat4(1.0f);
+
+		mvp.projection[1][1] *= -1;
 		//Create a mesh 
 		//vertex data
 		std::vector<Vertex> meshVertices =
@@ -73,6 +81,11 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 	return EXIT_SUCCESS; //0
 }
 
+void VulkanRenderer::updateModel(glm::mat4 newModel)
+{
+	mvp.model = newModel;
+}
+
 void VulkanRenderer::draw()
 {
 	//Wait for given fence to signal (open) from last draw before continuing
@@ -85,7 +98,8 @@ void VulkanRenderer::draw()
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(mainDevice.logicalDevice, swapchain, std::numeric_limits<uint64_t>::max(), imageAvailable[currentFrame], VK_NULL_HANDLE, &imageIndex);
 	
-	
+	// Update Uniform Values
+	updateUniformBuffer(imageIndex);
 	
 	// -- SUBMIT COMMAND BUFFER TO THE QUEUE -- //
 	//queue submittion info
@@ -674,13 +688,13 @@ void VulkanRenderer::createGraphicsPipeline()
 	// -- 6. RASTERIZATION --
 	VkPipelineRasterizationStateCreateInfo rasterizationCreateInfo = {};
 	rasterizationCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	rasterizationCreateInfo.depthClampEnable = VK_FALSE;		//Change if fragments deyond near\far planes are clipped (default VK_TRUE) or clamped to plane(can mess realtime shadowing)
-	rasterizationCreateInfo.rasterizerDiscardEnable = VK_FALSE; //Whether to discard data and skip rasterizer. Never creates fragments, only suitable for pipeline without framebuffer output
-	rasterizationCreateInfo.polygonMode = VK_POLYGON_MODE_FILL; //How to handle filling points between vertices. If other then FIll -> requires GPU feature
-	rasterizationCreateInfo.lineWidth = 1;						//How thick lines should be when drawn. If value is other than 1 -> GPU feature required
-	rasterizationCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;	//Which face of a triangle to cull
-	rasterizationCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;//Winding to determine which size is front
-	rasterizationCreateInfo.depthBiasEnable = VK_FALSE;			//Whether to add depth bias to fragments (good for stopping "shadow acne" in shadow mapping)
+	rasterizationCreateInfo.depthClampEnable = VK_FALSE;				// Change if fragments deyond near\far planes are clipped (default VK_TRUE) or clamped to plane(can mess realtime shadowing)
+	rasterizationCreateInfo.rasterizerDiscardEnable = VK_FALSE;			// Whether to discard data and skip rasterizer. Never creates fragments, only suitable for pipeline without framebuffer output
+	rasterizationCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;			// How to handle filling points between vertices. If other then FIll -> requires GPU feature
+	rasterizationCreateInfo.lineWidth = 1;								// How thick lines should be when drawn. If value is other than 1 -> GPU feature required
+	rasterizationCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;			// Which face of a triangle to cull
+	rasterizationCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;// Winding to determine which size is front
+	rasterizationCreateInfo.depthBiasEnable = VK_FALSE;					// Whether to add depth bias to fragments (good for stopping "shadow acne" in shadow mapping)
 
 	// -- 7. MULTISAMPLING --
 	VkPipelineMultisampleStateCreateInfo multisampleCreateInfo = {};
@@ -916,17 +930,44 @@ void VulkanRenderer::createDescriptorSets()
 	allocateInfo.descriptorSetCount = static_cast<uint32_t>(uniformBuffer.size());	//Number of sets tro allocate
 	allocateInfo.pSetLayouts = setLayouts.data();									//Layouts to use to allocate set (1:1 relationship)
 	
-	//Allocae descriptor sets (multiple)
+	// Allocae descriptor sets (multiple)
 	VkResult result = vkAllocateDescriptorSets(mainDevice.logicalDevice, &allocateInfo, descriptorSets.data());
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate descriptor sets for buffer");
 	}
-	else
+	
+	// Update all of descriptor set buffer bindings
+	for (size_t i = 0; i < uniformBuffer.size(); i++)
 	{
-		printf("Successfully created descriptor sets");
+		// Vuffer info and data offset info
+		VkDescriptorBufferInfo mvpBuffferInfo = {};
+		mvpBuffferInfo.buffer = uniformBuffer[i];			//Buffer to get data from
+		mvpBuffferInfo.offset = 0;							//Position of start of data
+		mvpBuffferInfo.range = sizeof(MVP);					//Size of data to be bound to the descriptor set
+
+		// Data about connection between binding and buffer
+		VkWriteDescriptorSet mvpSetWrite = {};
+		mvpSetWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		mvpSetWrite.dstSet = descriptorSets[i];							// Descriptor Set to update
+		mvpSetWrite.dstBinding = 0;										// Binding to update (matches with binding on layout/shader) 
+		mvpSetWrite.dstArrayElement = 0;								// Index in array to update
+		mvpSetWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;	// Type of descriptor
+		mvpSetWrite.descriptorCount = 1;								// Amount to update
+		mvpSetWrite.pBufferInfo = &mvpBuffferInfo;						// Info about buffer data to bind
+
+		// Update the descriptor sets with new buffer/binding info
+		vkUpdateDescriptorSets(mainDevice.logicalDevice, 1, &mvpSetWrite, 0, nullptr);
 	}
 	 
+}
+
+void VulkanRenderer::updateUniformBuffer(uint32_t imageIndex)
+{
+	void* data;
+	vkMapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex], 0, sizeof(MVP), 0, &data);
+	memcpy(data, &mvp, sizeof(MVP));
+	vkUnmapMemory(mainDevice.logicalDevice, uniformBufferMemory[imageIndex]);
 }
 
 void VulkanRenderer::recordCommands()
@@ -971,19 +1012,25 @@ void VulkanRenderer::recordCommands()
 			//record drawing all meshes
 			for (size_t j = 0; j < meshes.size(); j++)
 			{
-				//use vertex buffer
+				// Use vertex buffer
 				VkBuffer vertexBuffers[] = { meshes[j].getVertexBuffer() };							//Buffers to bind
 				VkDeviceSize vertexOffsets[] = { 0 };												//Offsets into buffers being bound
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, vertexOffsets);		//Command to bind vertex buffer before drawing
 
-				//use index buffer
+				// Use index buffer
 				VkBuffer indexBuffers[] = { meshes[j].getIndexBuffer() };
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], meshes[j].getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-				//Execute Pipeline
-				//Without index buffers
-				//vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(firstMesh.getVertexCount()), 1, 0, 0);
-				//With index buffers
+
+				// Bind Descriptor Sets
+				// TODO: Implement Dynamic Offsets
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+					0, 1, &descriptorSets[i], 0, nullptr);
+
+				// Execute Pipeline
+				// Without index buffers
+				// vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(firstMesh.getVertexCount()), 1, 0, 0);
+				// With index buffers
 				vkCmdDrawIndexed(commandBuffers[i], meshes[j].getIndexCount(), 1, 0, 0, 0);
 			}
 			
