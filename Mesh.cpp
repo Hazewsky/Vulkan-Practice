@@ -16,6 +16,18 @@ Mesh::Mesh(VkPhysicalDevice newPhysicalDevice, VkDevice newLogicalDevice,
 	device = newLogicalDevice;
 	createVertexBuffer(transferQueue, transferCommandPool, vertices);
 	createIndexBuffer(transferQueue, transferCommandPool, indices);
+
+	uboModel.modelMatrix = glm::mat4(1.0f);
+}
+
+void Mesh::setModel(glm::mat4 model)
+{
+	uboModel.modelMatrix = model;
+}
+
+UboModel Mesh::getModel()
+{
+	return uboModel;
 }
 
 

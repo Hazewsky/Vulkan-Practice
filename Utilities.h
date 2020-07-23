@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 const int MAX_FRAME_DRAWS = 3;
+const int MAX_OBJECTS = 2;
 
 const std::vector<const char*> validationLayers =
 {
@@ -112,7 +113,7 @@ static VkResult createBuffer(VkPhysicalDevice physicalDevice, VkDevice device,
 	VkResult result = vkCreateBuffer(device, &bufferInfo, nullptr, buffer);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create a Vertex Buffer");
+		throw std::runtime_error("Failed to create a Buffer");
 	}
 
 	//GET BUFFER REQUIREMENTS
@@ -133,7 +134,7 @@ static VkResult createBuffer(VkPhysicalDevice physicalDevice, VkDevice device,
 	result = vkAllocateMemory(device, &memoryAllocInfo, nullptr, bufferMemory);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to allocate memory for vertex buffer!");
+		throw std::runtime_error("Failed to allocate memory for buffer!");
 	}
 
 	//Allocate(Bind) memory to given vertex buffer
