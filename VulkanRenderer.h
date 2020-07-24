@@ -68,18 +68,27 @@ private:
 
 	// -- Descriptors -- //
 	VkDescriptorSetLayout descriptorSetLayout;
+
+	//Push Constants
+	VkPushConstantRange pushConstantRange;
+
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
 
 	std::vector<VkBuffer> vpUniformBuffer;
 	std::vector<VkDeviceMemory> vpUniformBufferMemory;
 
-	std::vector<VkBuffer> modelUniformBufferDynamic;
-	std::vector<VkDeviceMemory> modelUniformBufferMemoryDynamic;
+	//DYNAMIC UNIFORM BUFFER: TEMPORARY NOT IN USE
+	/*std::vector<VkBuffer> modelUniformBufferDynamic;
+	std::vector<VkDeviceMemory> modelUniformBufferMemoryDynamic;*/
 
-	VkDeviceSize minUniformBufferOffset;
+	//DYNAMIC UNIFORM BUFFER: TEMPORARY NOT IN USE
+	/*VkDeviceSize minUniformBufferOffset;
 	size_t modelUniformAlignment;
-	UboModel* modelTransferSpace;
+	//Model* modelTransferSpace;*/
+
+	
+
 	// -- Pipeline -- //
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
@@ -112,6 +121,7 @@ private:
 	void createSwapChain();
 	void createRenderPass();
 	void createDescriptorSetLayout();
+	void createPushConstantRange();
 	void createGraphicsPipeline();
 	void createFramebuffers();
 	void createCommandPool();
@@ -125,13 +135,13 @@ private:
 	void updateUniformBuffers(uint32_t imageIndex);
 
 	// -- Record Functions -- //
-	void recordCommands();
+	void recordCommands(uint32_t currentImage);
 
 	// -- Get Functions -- //
 	void getPhysicalDevice();
 
 	// -- Allocate Functions -- //
-	void allocateDynamicBufferTransferSpace();
+	//void allocateDynamicBufferTransferSpace();
 
 	// -- Populate functions -- //
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

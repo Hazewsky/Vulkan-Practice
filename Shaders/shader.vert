@@ -9,14 +9,20 @@ layout(binding = 0) uniform UboViewProjection
 	mat4 view;
 } uboViewProjection;
 
+// NOT IN USE, SAPMLE OF PARSING UBO DATA AS DYNAMIC UNIFORM 
 layout(binding = 1) uniform UboModel
 {
 	mat4 model;
 } uboModel;
 
+layout(push_constant) uniform PushModel
+{
+	mat4 model;
+} pushModel;
+
 layout(location = 0) out vec3 fragCol;
 void main()
 {
   fragCol = color;
-  gl_Position = uboViewProjection.projection * uboViewProjection.view * uboModel.model * vec4(pos, 1.0);
+  gl_Position = uboViewProjection.projection * uboViewProjection.view * pushModel.model * vec4(pos, 1.0);
 }

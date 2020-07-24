@@ -17,17 +17,17 @@ Mesh::Mesh(VkPhysicalDevice newPhysicalDevice, VkDevice newLogicalDevice,
 	createVertexBuffer(transferQueue, transferCommandPool, vertices);
 	createIndexBuffer(transferQueue, transferCommandPool, indices);
 
-	uboModel.modelMatrix = glm::mat4(1.0f);
+	model.modelMatrix = glm::mat4(1.0f);
 }
 
-void Mesh::setModel(glm::mat4 model)
+void Mesh::setModel(glm::mat4 newModel)
 {
-	uboModel.modelMatrix = model;
+	model.modelMatrix = newModel;
 }
 
-UboModel Mesh::getModel()
+Model Mesh::getModel()
 {
-	return uboModel;
+	return model;
 }
 
 
