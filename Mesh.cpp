@@ -18,6 +18,51 @@ Mesh::Mesh(VkPhysicalDevice newPhysicalDevice, VkDevice newLogicalDevice,
 	createIndexBuffer(transferQueue, transferCommandPool, indices);
 
 	model.modelMatrix = glm::mat4(1.0f);
+	// Check for vertex normals. It we have a normal vec3::zero (0.0f, 0.0f, 0.0f) - calculate normals manually
+	//dut to the plane that we use, we can only calculate normals for 3+ vertices
+	//if (vertices->size() >= 3)
+	//{
+	//	for (size_t i = 0; i < vertices->size(); i++)
+	//	{
+	//		Vertex v = vertices->data()[i];
+	//		
+	//		if (v.normal == glm::vec3(0))
+	//		{
+	//			glm::vec3 normal;
+	//			glm::vec3 u;
+	//			glm::vec3 v;
+	//			// Calculate normals. Since the vertex itself is just a single point with no surface, we've use surrounding vertices to build 
+	//			//1st vertex
+	//			if (i == 0 && i + 2 < vertices->size())
+	//			{
+	//				u = (vertices->begin() + 1)->pos - vertices->begin()->pos;
+	//				v = (vertices->begin() + 2)->pos - vertices->begin()->pos;
+	//				(vertices->begin() + i)->normal = glm::cross(u, v);
+	//			}
+	//			//middle vertices
+	//			else if (i > 0 && i + 1 < vertices->size())
+	//			{
+	//				u = (vertices->begin() + i - 1)->pos - (vertices->begin() + i)->pos;
+	//				v = (vertices->begin() + i + 1)->pos - vertices->begin()->pos;
+	//				(vertices->begin() + i)->normal = glm::cross(u, v);
+	//			}
+	//			//last vertex
+	//			else if (i == vertices->size() - 1 && i - 2 >= 0)
+	//			{
+	//				u = (vertices->begin() + i - 1)->pos - (vertices->begin() + i)->pos;
+	//				v = (vertices->begin() + i - 2)->pos - vertices->begin()->pos;
+	//				(vertices->begin() + i)->normal = glm::cross(u, v);
+	//			}
+	//		}
+	//		
+	//	}
+	//}
+	//else
+	//{
+	//	//we don't have enough points to calculate normals. Set arbitrary values
+
+	//}
+	
 }
 
 void Mesh::setModel(glm::mat4 newModel)

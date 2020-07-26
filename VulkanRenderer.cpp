@@ -26,9 +26,9 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createCommandPool();
 
 		//Set up Matrices for camera
-		
-		uboViewProjection.projection = glm::perspective(glm::radians(45.0f), 
-			(float) swapchainExtent.width / (float) swapchainExtent.height,
+
+		uboViewProjection.projection = glm::perspective(glm::radians(45.0f),
+			(float)swapchainExtent.width / (float)swapchainExtent.height,
 			0.1f, 100.0f);
 		uboViewProjection.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -39,32 +39,104 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		//vertex data
 		std::vector<Vertex> meshVertices =
 		{
-			{{-0.4, 0.4, 0.0}, {1.0f, 0.0f, 0.0f, 1.0f}},		// 0
-			{{-0.4, -0.4, 0.0}, {1.0f, 0.0f, 0.0f, 1.0f}},	// 1
-			{{0.4, -0.4, 0.0}, {1.0f, 0.0f, 0.0f, 1.0f}},		// 2
-			{{0.4, 0.4, 0.0}, {1.0f, 0.0f, 0.0f, 1.0f}},	// 3
+			// FRONT FACE
+			{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 0
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 1
+			{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 2
+			{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 3
+			//// BACK FACE
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 4
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 5
+			{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 6
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}},		// 7
+			//EXTRA FOR LIGHTING TEST
+			//LEFT FACE
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 8
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 9
+			{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 10
+			{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}},		// 11
+			//RIGHT FACE
+			{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 12
+			{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 13
+			{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 14
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 15
+			//TOP FACE
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 16
+			{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 17
+			{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 18
+			{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 19
+			//BOTTOM FACE
+			{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 20
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 21
+			{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}},		// 22
+			{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 23
+
 		};
 
 		std::vector<Vertex> meshVertices2 =
 		{
-			{{-0.25, 0.8, 0.0}, {1.0f, 0.0f, 1.0f, 0.5f}},		// 0
-			{{-0.25, -0.8, 0.0}, {1.0f, 0.0f, 1.0f, 0.5f}},		// 1
-			{{0.25, -0.8, 0.0}, {1.0f, 0.0f, 1.0f, 0.5f}},		// 2
-			{{0.25, 0.8, 0.0}, {1.0f, 0.0f, 1.0f, 0.5f}},		// 3
-			
+			{{-0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 0
+			{{-0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 1
+			{{0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 2
+			{{0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 3
+
 		};
 
 		//index data
-		std::vector<uint32_t> meshIndices = 
+		//std::vector<uint32_t> meshIndices1 = 
+		//{
+		//	//FRONT FACE
+		//	0, 1, 2,	//1st triangle
+		//	2, 3, 0,	//2nd triangle
+		//	////BACK FACE
+		//	4, 5, 6,
+		//	6, 7, 4,
+		//	////LEFT FACE
+		//	1, 0, 4,
+		//	4, 5, 1,
+		//	////RIGHT FACE
+		//	6, 7, 3,
+		//	3, 2, 6,
+		//	////TOP FACE
+		//	3, 7, 4,
+		//	4, 0, 3,
+		//	////BOTTOM FACE
+		//	2, 6, 5,
+		//	5, 1, 2
+		//};
+		//index data for lighting test
+		std::vector<uint32_t> meshIndices1 =
+		{
+			//FRONT FACE
+			0, 1, 2,
+			2, 3, 0,
+			//BACK FACE
+			4, 5, 6,
+			6, 7, 4,
+			//LEFT FACE
+			8, 9, 10,
+			10, 11, 8,
+			////RIGHT FACE
+			12, 13, 14,
+			14, 15, 12,
+			//TOP FACE
+			16, 17, 18,
+			18, 19, 16,
+			//BOTTOM FACE
+			21, 20, 23,
+			23, 22, 21
+		};
+
+		std::vector<uint32_t> meshIndices2 =
 		{
 			0, 1, 2,	//1st triangle
 			2, 3, 0		//2nd triangle
 		};
 
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-			graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices));
+			graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1));
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-			graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices));
+			graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices2));
 
 		createCommandBuffers();
 		createUniformBuffers();
@@ -679,7 +751,7 @@ void VulkanRenderer::createGraphicsPipeline()
 																//VK_VERTEX_INPUT_RATE_INSTANCE : move on to a vertex of the next instance (draw all 1st vertices in all instances, then 2nd vertices and so on
 
 	//How the data for an attribute is defined withing a vertex
-	std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions;
+	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions;
 	//Position attribute
 	attributeDescriptions[0].binding = 0;							//Which binding the data is at (should be same as above, unless you have multiple streams of data)
 	attributeDescriptions[0].location = 0;							//Location in shader where data will be read from
@@ -689,7 +761,12 @@ void VulkanRenderer::createGraphicsPipeline()
 	attributeDescriptions[1].binding = 0;							
 	attributeDescriptions[1].location = 1;							
 	attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;		//VK_FORMAT_R8G8B8A8_SRGB
-	attributeDescriptions[1].offset = offsetof(Vertex, col);		
+	attributeDescriptions[1].offset = offsetof(Vertex, col);
+	//Normal attribute
+	attributeDescriptions[2].binding = 0;
+	attributeDescriptions[2].location = 2;
+	attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions[2].offset = offsetof(Vertex, normal);
 
 	// -- 1. VERTEX INPUT (TODO: Put in vertex descriptions when resources created) --
 	VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
@@ -751,7 +828,7 @@ void VulkanRenderer::createGraphicsPipeline()
 	rasterizationCreateInfo.rasterizerDiscardEnable = VK_FALSE;			// Whether to discard data and skip rasterizer. Never creates fragments, only suitable for pipeline without framebuffer output
 	rasterizationCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;			// How to handle filling points between vertices. If other then FIll -> requires GPU feature
 	rasterizationCreateInfo.lineWidth = 1;								// How thick lines should be when drawn. If value is other than 1 -> GPU feature required
-	rasterizationCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;			// Which face of a triangle to cull
+	rasterizationCreateInfo.cullMode = /*VK_CULL_MODE_BACK_BIT*/VK_CULL_MODE_NONE;			// Which face of a triangle to cull
 	rasterizationCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;// Winding to determine which size is front
 	rasterizationCreateInfo.depthBiasEnable = VK_FALSE;					// Whether to add depth bias to fragments (good for stopping "shadow acne" in shadow mapping)
 
