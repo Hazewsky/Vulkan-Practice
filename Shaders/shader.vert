@@ -1,7 +1,7 @@
 #version 450 //Use GLSL 4.5
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec3 color;
+layout(location = 1) in vec4 color;
 
 layout(binding = 0) uniform UboViewProjection
 {
@@ -20,7 +20,7 @@ layout(push_constant) uniform PushModel
 	mat4 model;
 } pushModel;
 
-layout(location = 0) out vec3 fragCol;
+layout(location = 0) out vec4 fragCol;
 void main()
 {
   fragCol = color;

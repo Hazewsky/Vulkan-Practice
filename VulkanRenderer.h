@@ -25,7 +25,7 @@ public:
 	void updateModel(int modelId, glm::mat4 newModel);
 	void draw();
 	void cleanup();
-
+	
 	~VulkanRenderer();
 
 private:
@@ -63,6 +63,12 @@ private:
 	std::vector<SwapchainImage> swapchainImages;
 	std::vector<VkFramebuffer> swapchainFramebuffers;
 	std::vector<VkCommandBuffer> commandBuffers;
+
+	// -- Depth Buffer -- //
+	VkImage depthBufferImage;
+	VkDeviceMemory depthBufferImageMemory;
+	VkImageView depthBufferImageView;
+	VkFormat depthImageFormat;
 
 	VkRenderPass renderPass;
 
@@ -123,6 +129,7 @@ private:
 	void createDescriptorSetLayout();
 	void createPushConstantRange();
 	void createGraphicsPipeline();
+	void createDepthBufferImage();
 	void createFramebuffers();
 	void createCommandPool();
 	void createCommandBuffers();
@@ -177,12 +184,18 @@ private:
 		const VkAllocationCallbacks* pAllocator);
 
 	// -- Choose funcs -- //
+	
 	VkSurfaceFormatKHR chooseBestSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &formats);
 	VkPresentModeKHR chooseBestSurfacePresentationMode(const std::vector<VkPresentModeKHR>& modes);
 	//size of surface images
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& surfaceCapabilities);
+	VkFormat chooseSupportedFormat(const std::vector<VkFormat> &formats, VkImageTiling tiling, VkFormatFeatureFlags featureFlags);
 
 	// -- Create funcs -- //
+	VkImage createImage(
+		uint32_t width, uint32_t height, VkFormat format, 
+		VkImageTiling tiling, VkImageUsageFlags useFlags, VkMemoryPropertyFlags propFlags,
+		VkDeviceMemory *imageMemory);
 	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 	
