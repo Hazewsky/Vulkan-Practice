@@ -201,7 +201,7 @@ static void copyImageBuffer(
 	imageRegion.bufferImageHeight = 0;										// Image Height to calculate data spacing
 	imageRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;	// Which aspect of image to copy
 	imageRegion.imageSubresource.mipLevel = 0;								// Mipmap level to copy
-	imageRegion.imageSubresource.baseArrayLayer = 1;						// Starting array layer (if array)
+	imageRegion.imageSubresource.baseArrayLayer = 0;						// Starting array layer (if array)
 	imageRegion.imageSubresource.layerCount = 1;							// Number of layers to copy starting at baseArrayLayer
 
 	imageRegion.imageExtent = { width, height, 1 };							// Size of data to copy as (x, y, z) values

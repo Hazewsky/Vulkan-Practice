@@ -1605,7 +1605,7 @@ stbi_uc * VulkanRenderer::loadTexture(std::string fileName, int * width, int * h
 	int channels;
 	
 	// Load pixel data for image
-	std::string fileLoc = "Texture/" + fileName;
+	std::string fileLoc = "Textures/" + fileName;
 	stbi_uc * image = stbi_load(fileLoc.c_str(), width, height, &channels, STBI_rgb_alpha);
 
 	if (!image)
