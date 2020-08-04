@@ -47,36 +47,36 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		std::vector<Vertex> meshVertices =
 		{
 			// FRONT FACE
-			{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},	// 0
-			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},	// 1
-			{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},	// 2
-			{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},		// 3
+			{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},	// 0
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},	// 1
+			{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},	// 2
+			{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},		// 3
 			//// BACK FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},	// 4
-			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},	// 5
-			{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},	// 6
-			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},	// 7
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},	// 4
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},	// 5
+			{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},	// 6
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},	// 7
 			//EXTRA FOR LIGHTING TEST
 			//LEFT FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 8
-			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 9
-			{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 10
-			{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 11
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 8
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 9
+			{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 10
+			{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 11
 			//RIGHT FACE
-			{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},		// 12
-			{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 13
-			{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 14
-			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 15
+			{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},		// 12
+			{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 13
+			{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 14
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 15
 			//TOP FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},	// 16
-			{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},	// 17
-			{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},	// 18
-			{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},		// 19
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},	// 16
+			{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},	// 17
+			{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},	// 18
+			{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},		// 19
 			//BOTTOM FACE
-			{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},	// 20
-			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},	// 21
-			{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},	// 22
-			{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},	// 23
+			{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},	// 20
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},	// 21
+			{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},	// 22
+			{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},	// 23
 
 		};
 
@@ -142,10 +142,10 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
 			graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1,
-			createTextureImage("TexturesCom_SignsNeon0046_S.jpg")));
+			createTexture("TexturesCom_SignsNeon0046_S.jpg")));
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
 			graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices2,
-			createTextureImage("TexturesCom_SignsNeon0046_S.jpg")));
+			createTexture("TexturesCom_SignsNeon0046_S.jpg")));
 		
 	}
 	catch (const std::runtime_error &e)
@@ -788,7 +788,7 @@ void VulkanRenderer::createGraphicsPipeline()
 																//VK_VERTEX_INPUT_RATE_INSTANCE : move on to a vertex of the next instance (draw all 1st vertices in all instances, then 2nd vertices and so on
 
 	//How the data for an attribute is defined withing a vertex
-	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions;
+	std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions;
 	//Position attribute
 	attributeDescriptions[0].binding = 0;							//Which binding the data is at (should be same as above, unless you have multiple streams of data)
 	attributeDescriptions[0].location = 0;							//Location in shader where data will be read from
@@ -1159,7 +1159,7 @@ void VulkanRenderer::createDescriptorPool()
 	{
 		throw std::runtime_error("Failed to create uniform descriptor pool!");
 	}
-
+	
 	// CREATE SAMPLER DESCRIPTOR POOL
 	// Texture sampler pool
 	VkDescriptorPoolSize samplerPoolSize = {};
@@ -1175,7 +1175,6 @@ void VulkanRenderer::createDescriptorPool()
 
 	result = vkCreateDescriptorPool(mainDevice.logicalDevice, &samplerPoolCreateInfo, nullptr, &samplerDescriptorPool);
 
-	VkResult result = vkCreateDescriptorPool(mainDevice.logicalDevice, &createInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create sampler descriptor pool!");
@@ -1654,7 +1653,6 @@ int VulkanRenderer::createTextureDescriptor(VkImageView textureImage)
 
 	// Return descriptor set location
 	return samplerDescriptorSets.size() - 1;
-	return ;
 }
 
 stbi_uc * VulkanRenderer::loadTexture(std::string fileName, int * width, int * height, VkDeviceSize * imageSize)
