@@ -3,7 +3,11 @@
 layout(location = 0) in vec4 FragCol;
 layout(location = 1) in vec3 FragPos;
 layout(location = 2) in vec3 Normal;
+layout(location = 3) in vec2 UVs;
+
 layout(location = 0) out vec4 outColor;
+
+layout(set = 1, binding = 0) uniform sampler2D textureSampler;
 
 /*layout(push_constant) uniform LightingModel
 {
@@ -38,5 +42,5 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec4 resultingColor = vec4(ambient + diffuse + specular, 1.0) * FragCol;
-	outColor = resultingColor;
+	outColor = texture(textureSampler, UVs) * resultingColor;
 }

@@ -8,7 +8,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(VkPhysicalDevice newPhysicalDevice, VkDevice newLogicalDevice, 
 	VkQueue transferQueue, VkCommandPool transferCommandPool, 
-	std::vector<Vertex>* vertices, std::vector<uint32_t> * indices)
+	std::vector<Vertex>* vertices, std::vector<uint32_t> * indices, int newTextureId)
 {
 	vertexCount = static_cast<uint32_t>(vertices->size());
 	indexCount = static_cast<uint32_t>(indices->size());
@@ -18,6 +18,8 @@ Mesh::Mesh(VkPhysicalDevice newPhysicalDevice, VkDevice newLogicalDevice,
 	createIndexBuffer(transferQueue, transferCommandPool, indices);
 
 	model.modelMatrix = glm::mat4(1.0f);
+
+	textureId = newTextureId;
 	// Check for vertex normals. It we have a normal vec3::zero (0.0f, 0.0f, 0.0f) - calculate normals manually
 	//dut to the plane that we use, we can only calculate normals for 3+ vertices
 	//if (vertices->size() >= 3)
@@ -73,6 +75,11 @@ void Mesh::setModel(glm::mat4 newModel)
 Model Mesh::getModel()
 {
 	return model;
+}
+
+int Mesh::getTextureId()
+{
+	return textureId;
 }
 
 

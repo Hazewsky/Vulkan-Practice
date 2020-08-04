@@ -23,6 +23,7 @@ struct Vertex
 	glm::vec3 pos;		// Vertex Position (x, y, z)
 	glm::vec4 col;		// Vertex Color (r, g, b, a)
 	glm::vec3 normal;	// Vertex Normals (x, y, z)
+	glm::vec2 UVs;		// Vertex texture coordinates (u, v)
 };
 
 //Indices (locations) of Queue Families (if they exist)

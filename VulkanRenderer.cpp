@@ -24,10 +24,16 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		createDepthBufferImage();
 		createFramebuffers();
 		createCommandPool();
+		createCommandBuffers();
+		createTextureSampler();
+		createUniformBuffers();
+		createDescriptorPool();
+		createDescriptorSets();
+		createSynchronization();
 
-		int firstTexture = createTextureImage("TexturesCom_SignsNeon0046_S.jpg");
-		//Set up Matrices for camera
+		// Data used to create objects on a scene
 
+		// Set up Matrices for camera
 		uboViewProjection.projection = glm::perspective(glm::radians(45.0f),
 			(float)swapchainExtent.width / (float)swapchainExtent.height,
 			0.1f, 100.0f);
@@ -41,45 +47,45 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		std::vector<Vertex> meshVertices =
 		{
 			// FRONT FACE
-			{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 0
-			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 1
-			{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 2
-			{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 3
+			{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},	// 0
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},	// 1
+			{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},	// 2
+			{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},		// 3
 			//// BACK FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 4
-			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 5
-			{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}},	// 6
-			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}},		// 7
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},	// 4
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},	// 5
+			{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},	// 6
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},	// 7
 			//EXTRA FOR LIGHTING TEST
 			//LEFT FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 8
-			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 9
-			{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}},	// 10
-			{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}},		// 11
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 8
+			{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 9
+			{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 10
+			{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 11
 			//RIGHT FACE
-			{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 12
-			{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 13
-			{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 14
-			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}},		// 15
+			{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},		// 12
+			{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 13
+			{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 14
+			{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 15
 			//TOP FACE
-			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 16
-			{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 17
-			{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 18
-			{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}},		// 19
+			{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},	// 16
+			{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},	// 17
+			{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},	// 18
+			{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},		// 19
 			//BOTTOM FACE
-			{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 20
-			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 21
-			{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}},		// 22
-			{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}},	// 23
+			{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},	// 20
+			{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},	// 21
+			{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},	// 22
+			{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},	// 23
 
 		};
 
 		std::vector<Vertex> meshVertices2 =
 		{
-			{{-0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 0
-			{{-0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 1
-			{{0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 2
-			{{0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},		// 3
+			{{-0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},		// 0
+			{{-0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},	// 1
+			{{0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},		// 2
+			{{0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},		// 3
 
 		};
 
@@ -135,16 +141,11 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		};
 
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-			graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1));
+			graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1,
+			createTextureImage("TexturesCom_SignsNeon0046_S.jpg")));
 		meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-			graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices2));
-
-		createCommandBuffers();
-		createTextureSampler();
-		createUniformBuffers();
-		createDescriptorPool();
-		createDescriptorSets();
-		createSynchronization();
+			graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices2,
+			createTextureImage("TexturesCom_SignsNeon0046_S.jpg")));
 		
 	}
 	catch (const std::runtime_error &e)
@@ -249,8 +250,8 @@ void VulkanRenderer::cleanup()
 
 	//don't need to free Descriptor Sets because they're be automatically released after Descriptor Pool destroy
 	//Sampler Descriptor Sets
-	vkDestroyDescriptorPool(mainDevice.logicalDevice, descriptorPool, nullptr);
-	vkDestroyDescriptorSetLayout(mainDevice.logicalDevice, descriptorSetLayout, nullptr);
+	vkDestroyDescriptorPool(mainDevice.logicalDevice, samplerDescriptorPool, nullptr);
+	vkDestroyDescriptorSetLayout(mainDevice.logicalDevice, samplerDescriptorSetLayout, nullptr);
 	//Uniform Descriptor Sets
 	vkDestroyDescriptorPool(mainDevice.logicalDevice, descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(mainDevice.logicalDevice, descriptorSetLayout, nullptr);
@@ -803,6 +804,11 @@ void VulkanRenderer::createGraphicsPipeline()
 	attributeDescriptions[2].location = 2;
 	attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
 	attributeDescriptions[2].offset = offsetof(Vertex, normal);
+	//UVs attribute
+	attributeDescriptions[3].binding = 0;
+	attributeDescriptions[3].location = 3;
+	attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
+	attributeDescriptions[3].offset = offsetof(Vertex, UVs);
 
 	// -- 1. VERTEX INPUT (TODO: Put in vertex descriptions when resources created) --
 	VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
@@ -916,7 +922,7 @@ void VulkanRenderer::createGraphicsPipeline()
 	VkResult result = vkCreatePipelineLayout(mainDevice.logicalDevice, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Enable to create pipeline layout!");
+		throw std::runtime_error("Unable to create pipeline layout!");
 	}
 	// -- 10. DEPTH STENCIL TESTING
 	// TODO: Set up depth stencil testing
@@ -952,7 +958,7 @@ void VulkanRenderer::createGraphicsPipeline()
 	result = vkCreateGraphicsPipelines(mainDevice.logicalDevice, VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &graphicsPipeline);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Enable to create pipeline(-s)!");
+		throw std::runtime_error("Unable to create pipeline(-s)!");
 	}
 
 	//we don't need shader modules anymore after pipeline creation -> delete 'em
@@ -994,7 +1000,7 @@ void VulkanRenderer::createFramebuffers()
 		VkResult result = vkCreateFramebuffer(mainDevice.logicalDevice, &createInfo, nullptr, &swapchainFramebuffers[i]);
 		if (result != VK_SUCCESS)
 		{
-			throw std::runtime_error("Enable to create framebuffer!");
+			throw std::runtime_error("Unable to create framebuffer!");
 		}
 	}
 }
@@ -1332,8 +1338,14 @@ void VulkanRenderer::recordCommands(uint32_t currentImage)
 			&meshes[j].getModel());		//	Actual data to push (can be array)
 
 		// Bind Descriptor Sets
+		std::array<VkDescriptorSet, 2> descriptorSetGroup = 
+		{ 
+			descriptorSets[currentImage], 
+			samplerDescriptorSets[meshes[j].getTextureId()] 
+		};
+
 		vkCmdBindDescriptorSets(commandBuffers[currentImage], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
-			0, 1, &descriptorSets[currentImage], /*1*/0, /*&dynamicOffset*/nullptr);
+			0, static_cast<uint32_t>(descriptorSetGroup.size()), descriptorSetGroup.data(), /*1*/0, /*&dynamicOffset*/nullptr);
 
 		// Execute Pipeline
 		// Without index buffers
@@ -1594,9 +1606,55 @@ int VulkanRenderer::createTexture(std::string fileName)
 	VkImageView imageView = createImageView(textureImages[textureImageLoc], VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 	textureImageViews.push_back(imageView);
 
-	// TODO: Create Descriptor Set Here
+	// Create Texture Descriptor Set and get its location in array
+	int descriptorLoc = createTextureDescriptor(imageView);
 
-	return 0;
+	//Return location of set with texture
+	return descriptorLoc;
+}
+
+int VulkanRenderer::createTextureDescriptor(VkImageView textureImage)
+{
+	VkDescriptorSet descriptorSet;
+
+	// Descriptor Set Allocation Info
+	VkDescriptorSetAllocateInfo allocateInfo = {};
+	allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocateInfo.descriptorPool = samplerDescriptorPool;
+	allocateInfo.descriptorSetCount = 1;
+	allocateInfo.pSetLayouts = &samplerDescriptorSetLayout;
+
+	// Allocate 
+	VkResult result = vkAllocateDescriptorSets(mainDevice.logicalDevice, &allocateInfo, &descriptorSet);
+	if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to allocate texture descriptor sets!");
+	}
+
+	// Texture Image Info
+	VkDescriptorImageInfo imageInfo = {};
+	imageInfo.sampler = textureSampler;									// Sampler to use for set
+	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;	// Image layout when in use
+	imageInfo.imageView = textureImage;									// Image to bind to set
+	// Descriptor Write Info
+	VkWriteDescriptorSet descriptorWrite = {};
+	descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	descriptorWrite.dstSet = descriptorSet;
+	descriptorWrite.dstBinding = 0;
+	descriptorWrite.dstArrayElement = 0;
+	descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptorWrite.descriptorCount = 1;
+	descriptorWrite.pImageInfo = &imageInfo;
+
+	// Update new descriptor set
+	vkUpdateDescriptorSets(mainDevice.logicalDevice, 1, &descriptorWrite, 0, nullptr);
+
+	// Add descriptor Set to list
+	samplerDescriptorSets.push_back(descriptorSet);
+
+	// Return descriptor set location
+	return samplerDescriptorSets.size() - 1;
+	return ;
 }
 
 stbi_uc * VulkanRenderer::loadTexture(std::string fileName, int * width, int * height, VkDeviceSize * imageSize)
