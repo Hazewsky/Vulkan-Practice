@@ -1,0 +1,276 @@
+# FILE:ChNPP_1000.obj
+newmtl _____________-_______________
+Ka 0.527059 0.530196 0.495686
+Kd 0.592941 0.596471 0.557647
+Ks 0.0231785 0.0226688 0.0198848
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\Бетон литой.jpg
+map_Kd ChNPP_1000_Textures\Бетон литой.jpg
+map_Ks ChNPP_1000_Textures\Бетон литой.jpg
+newmtl _____________-_______________
+Ka 0.800471 0.807059 0.787294
+Kd 0.781412 0.787843 0.768549
+Ks 0 0 0
+illum 2
+Ns 0.2
+map_Ka ChNPP_1000_Textures\Штукатурка наружная.jpg
+map_Kd ChNPP_1000_Textures\Штукатурка наружная.jpg
+map_Ks ChNPP_1000_Textures\Штукатурка наружная.jpg
+newmtl _____________-_______________
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\Штукат.jpg
+map_Kd ChNPP_1000_Textures\Штукат.jpg
+map_Ks ChNPP_1000_Textures\Штукат.jpg
+newmtl _____________________________
+Ka 0.163575 0.163575 0.163575
+Kd 0.15994 0.15994 0.15994
+Ks 0 0 0
+illum 2
+Ns 0.84
+map_Ka ChNPP_1000_Textures\Асфальт альфа 2.jpg
+map_Kd ChNPP_1000_Textures\Асфальт альфа 2.jpg
+map_Ks ChNPP_1000_Textures\Асфальт альфа 2.jpg
+newmtl ____________-____________
+Ka 0.243016 0.252075 0.271919
+Kd 0.198562 0.205964 0.222178
+Ks 0 0 0
+illum 2
+Ns 0
+map_Ka ChNPP_1000_Textures\Свинец.jpg
+map_Kd ChNPP_1000_Textures\Свинец.jpg
+map_Ks ChNPP_1000_Textures\Свинец.jpg
+newmtl LS-__________
+Ka 0.371451 0.26102 0.188235
+Kd 0.580392 0.407843 0.294118
+Ks 0 0 0
+illum 2
+Ns 0
+map_Ka ChNPP_1000_Textures\Грунт альфа.jpg
+map_Kd ChNPP_1000_Textures\Грунт альфа.jpg
+map_Ks ChNPP_1000_Textures\Грунт альфа.jpg
+newmtl CHNPP_SATELLITE
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\Satellite.jpg
+map_Kd ChNPP_1000_Textures\Satellite.jpg
+map_Ks ChNPP_1000_Textures\Satellite.jpg
+newmtl MTL-_________________________
+Ka 0.692706 0.692706 0.692706
+Kd 0.707765 0.707765 0.707765
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 15
+map_Ka ChNPP_1000_Textures\Гофрированный лист1.jpg
+map_Kd ChNPP_1000_Textures\Гофрированный лист1.jpg
+map_Ks ChNPP_1000_Textures\Гофрированный лист1.jpg
+newmtl _____________________________
+Ka 0.677647 0.677647 0.677647
+Kd 0.662588 0.662588 0.662588
+Ks 0 0 0
+illum 2
+Ns 4.2
+map_Ka ChNPP_1000_Textures\Асфальт альфа 2.jpg
+map_Kd ChNPP_1000_Textures\Асфальт альфа 2.jpg
+map_Ks ChNPP_1000_Textures\Асфальт альфа 2.jpg
+newmtl _____________-02
+Ka 0.467765 0.467765 0.467765
+Kd 0.540235 0.540235 0.540235
+Ks 0.366667 0.366667 0.366667
+illum 2
+Ns 11
+newmtl PANELWHITE6
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite06.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite06.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite06.jpg
+newmtl PANELWHITE2
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite02.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite02.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite02.jpg
+newmtl PANELWHITE4
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite04.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite04.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite04.jpg
+newmtl PANELWHITE1
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite01.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite01.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite01.jpg
+newmtl PANELWHITE5
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite05.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite05.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite05.jpg
+newmtl PANELWHITE3
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite03.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite03.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite03.jpg
+newmtl PANELWHITE0
+Ka 0.75 0.75 0.75
+Kd 0.95 0.95 0.95
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 1
+map_Ka ChNPP_1000_Textures\PanelWhite00.jpg
+map_Kd ChNPP_1000_Textures\PanelWhite00.jpg
+map_Ks ChNPP_1000_Textures\PanelWhite00.jpg
+newmtl ____________-01
+Ka 0.8 0.8 0.8
+Kd 0.89 0.89 0.89
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 2.2
+newmtl ____________-06
+Ka 0.527294 0 0
+Kd 0.732353 0 0
+Ks 0.1 0.08 0.08
+illum 2
+Ns 1
+newmtl ___________________________
+Ka 0.546667 0.636667 0.73
+Kd 0.353725 0.411961 0.472353
+Ks 1 1 1
+illum 2
+d 0.6
+Ns 30
+newmtl ____________-20
+Ka 0.148392 0.455294 0.168627
+Kd 0.139765 0.428824 0.158824
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 2.2
+newmtl ____________-15
+Ka 0.86 0.86 0
+Kd 0.81 0.81 0
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 2.2
+newmtl ____________-18
+Ka 0.192235 0.323765 0.623922
+Kd 0.181059 0.304941 0.587647
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 2.2
+newmtl ____________-23
+Ka 0.403647 0.246196 0.598314
+Kd 0.442353 0.269804 0.655686
+Ks 0.0552941 0.0496471 0.0583529
+illum 2
+Ns 0.64
+newmtl ____________-03
+Ka 0.253373 0.253373 0.253373
+Kd 0.292627 0.292627 0.292627
+Ks 0.25098 0.25098 0.25098
+illum 2
+Ns 11
+newmtl ____________-04
+Ka 0.1454 0.1454 0.1454
+Kd 0.1454 0.1454 0.1454
+Ks 0.0913024 0.0913024 0.0913024
+illum 2
+Ns 4.2
+newmtl LS-_________________________
+Ka 0 0.193255 0
+Kd 0 0.183216 0
+Ks 0 0 0
+illum 2
+Ns 0
+map_Ka ChNPP_1000_Textures\Трава зеленая альфа.jpg
+map_Kd ChNPP_1000_Textures\Трава зеленая альфа.jpg
+map_Ks ChNPP_1000_Textures\Трава зеленая альфа.jpg
+newmtl ____________-_________________
+Ka 0.696588 0.707529 0.714824
+Kd 0.344549 0.349961 0.353569
+Ks 0.336602 0.336602 0.34
+illum 2
+Ns 64.16
+map_Ka ChNPP_1000_Textures\Метал пористый альфа.jpg
+map_Kd ChNPP_1000_Textures\Метал пористый альфа.jpg
+map_Ks ChNPP_1000_Textures\Метал пористый альфа.jpg
+newmtl ____________-_________________
+Ka 0.441376 0.153823 0.200443
+Kd 0.303446 0.105753 0.137804
+Ks 0.628617 0.54448 0.36811
+illum 2
+Ns 20
+map_Ka ChNPP_1000_Textures\Гранит 2.jpg
+map_Kd ChNPP_1000_Textures\Гранит 2.jpg
+map_Ks ChNPP_1000_Textures\Гранит 2.jpg
+newmtl ____________-_________________
+Ka 0.0698824 0.0698824 0.0698824
+Kd 0.0889412 0.0889412 0.0889412
+Ks 0.51 0.51 0.51
+illum 2
+Ns 27
+map_Ka ChNPP_1000_Textures\Мрамор 2 альфа.jpg
+map_Kd ChNPP_1000_Textures\Мрамор 2 альфа.jpg
+map_Ks ChNPP_1000_Textures\Мрамор 2 альфа.jpg
+newmtl ____________-________________
+Ka 0.899414 0.86345 0.86345
+Kd 0.275331 0.264321 0.264321
+Ks 0.544738 0.544738 0.544738
+illum 2
+Ns 7.8
+newmtl _______________________
+Ka 0.636667 0.636667 0.636667
+Kd 0.411961 0.411961 0.411961
+Ks 1 1 1
+illum 2
+d 0.6
+Ns 30
+newmtl GDLM33_SHADOW_MATERIAL
+Ka 0.228885 0.228885 0.228885
+Kd 0.228885 0.228885 0.228885
+Ks 0 0 0
+illum 2
+Ns 0
+newmtl ____________-____________
+Ka 0.892969 0.867768 0.840906
+Kd 0.496094 0.482094 0.46717
+Ks 0.51 0.508872 0.491611
+illum 2
+Ns 5.2
+newmtl ______________________________
+Ka 0.459804 0.236471 0.197059
+Kd 0.42549 0.218824 0.182353
+Ks 0.152 0.152 0.152
+illum 2
+Ns 0.56
+map_Ka ChNPP_1000_Textures\Кирпич ложк. п.jpg
+map_Kd ChNPP_1000_Textures\Кирпич ложк. п.jpg
+map_Ks ChNPP_1000_Textures\Кирпич ложк. п.jpg
