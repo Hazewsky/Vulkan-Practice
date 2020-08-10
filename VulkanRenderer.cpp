@@ -37,116 +37,10 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
 		uboViewProjection.projection = glm::perspective(glm::radians(45.0f),
 			(float)swapchainExtent.width / (float)swapchainExtent.height,
 			0.1f, 100.0f);
-		uboViewProjection.view = glm::lookAt(glm::vec3(10.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		uboViewProjection.view = glm::lookAt(glm::vec3(0, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		uboViewProjection.projection[1][1] *= -1;
 
-#pragma region Deprecated
-		////Create a mesh 
-		////vertex data
-		//std::vector<Vertex> meshVertices =
-		//{
-		//	// FRONT FACE
-		//	{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},	// 0
-		//	{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},	// 1
-		//	{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},	// 2
-		//	{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},		// 3
-		//	//// BACK FACE
-		//	{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},	// 4
-		//	{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},	// 5
-		//	{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},	// 6
-		//	{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},	// 7
-		//	//EXTRA FOR LIGHTING TEST
-		//	//LEFT FACE
-		//	{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 8
-		//	{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 9
-		//	{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 10
-		//	{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 11
-		//	//RIGHT FACE
-		//	{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},		// 12
-		//	{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 13
-		//	{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 14
-		//	{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 15
-		//	//TOP FACE
-		//	{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},	// 16
-		//	{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},	// 17
-		//	{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},	// 18
-		//	{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},		// 19
-		//	//BOTTOM FACE
-		//	{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},	// 20
-		//	{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},	// 21
-		//	{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},	// 22
-		//	{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},	// 23
-
-		//};
-
-		//std::vector<Vertex> meshVertices2 =
-		//{
-		//	{{-0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},		// 0
-		//	{{-0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},	// 1
-		//	{{0.25, -0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},		// 2
-		//	{{0.25, 0.45f, 0.0f}, {1.0f, 0.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},		// 3
-
-		//};
-
-		////index data
-		////std::vector<uint32_t> meshIndices1 = 
-		////{
-		////	//FRONT FACE
-		////	0, 1, 2,	//1st triangle
-		////	2, 3, 0,	//2nd triangle
-		////	////BACK FACE
-		////	4, 5, 6,
-		////	6, 7, 4,
-		////	////LEFT FACE
-		////	1, 0, 4,
-		////	4, 5, 1,
-		////	////RIGHT FACE
-		////	6, 7, 3,
-		////	3, 2, 6,
-		////	////TOP FACE
-		////	3, 7, 4,
-		////	4, 0, 3,
-		////	////BOTTOM FACE
-		////	2, 6, 5,
-		////	5, 1, 2
-		////};
-		////index data for lighting test
-		//std::vector<uint32_t> meshIndices1 =
-		//{
-		//	//FRONT FACE
-		//	0, 1, 2,
-		//	2, 3, 0,
-		//	//BACK FACE
-		//	4, 5, 6,
-		//	6, 7, 4,
-		//	//LEFT FACE
-		//	8, 9, 10,
-		//	10, 11, 8,
-		//	////RIGHT FACE
-		//	12, 13, 14,
-		//	14, 15, 12,
-		//	//TOP FACE
-		//	16, 17, 18,
-		//	18, 19, 16,
-		//	//BOTTOM FACE
-		//	21, 20, 23,
-		//	23, 22, 21
-		//};
-
-		//std::vector<uint32_t> meshIndices2 =
-		//{
-		//	0, 1, 2,	//1st triangle
-		//	2, 3, 0		//2nd triangle
-		//};
-
-		//meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-		//	graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1,
-		//	createTexture("TexturesCom_SignsNeon0046_S.jpg")));
-		//meshes.push_back(Mesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
-		//	graphicsQueue, graphicsCommandPool, &meshVertices2, &meshIndices2,
-		//	createTexture("TexturesCom_SignsNeon0046_S.jpg")));
-#pragma endregion
 		// Create default "no texture" texture
 		createTexture("plain.png");
 	}
@@ -1332,8 +1226,8 @@ void VulkanRenderer::recordCommands(uint32_t currentImage)
 		vkCmdBindVertexBuffers(commandBuffers[currentImage], 0, 1, vertexBuffers, vertexOffsets);	//Command to bind vertex buffer before drawing
 
 		// Use index buffer
-		VkBuffer indexBuffers[] = { thisModel.getMesh(k)->getIndexBuffer() };
-		VkDeviceSize indexOffsets[] = { 0 };
+		//VkBuffer indexBuffers[] = { thisModel.getMesh(k)->getIndexBuffer() };
+		//VkDeviceSize indexOffsets[] = { 0 };
 		vkCmdBindIndexBuffer(commandBuffers[currentImage], thisModel.getMesh(k)->getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 		//DYNAMIC UNIFORM BUFFER: TEMPORARY NOT IN USE
@@ -1706,6 +1600,71 @@ int VulkanRenderer::createMeshModel(std::string modelFile)
 	MeshModel meshModel = MeshModel(modelMeshes);
 	models.push_back(meshModel);
 
+	return models.size() - 1;
+}
+
+int VulkanRenderer::createCube(std::string texture)
+{
+	std::vector<Vertex> meshVertices =
+	{
+		// FRONT FACE
+		{{-0.5, 0.5, 0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},	// 0
+		{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},	// 1
+		{{0.5, -0.5, 0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},	// 2
+		{{0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},		// 3
+		//// BACK FACE
+		{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},	// 4
+		{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},	// 5
+		{{0.5, -0.5, -0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},	// 6
+		{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},	// 7
+		//EXTRA FOR LIGHTING TEST
+		//LEFT FACE
+		{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},	// 8
+		{{-0.5, -0.5, -0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 9
+		{{-0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 10
+		{{-0.5, 0.5, 0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 11
+		//RIGHT FACE
+		{{0.5, 0.5, 0.5f},{0.1f, 0.3f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},		// 12
+		{{0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},	// 13
+		{{0.5, -0.5, -0.5f}, {0.3f, 0.5f, 0.1f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},	// 14
+		{{0.5, 0.5, -0.5f}, {0.3f, 0.1f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},	// 15
+		//TOP FACE
+		{{-0.5, 0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},	// 16
+		{{-0.5, 0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},	// 17
+		{{0.5, 0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},	// 18
+		{{0.5, 0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},		// 19
+		//BOTTOM FACE
+		{{-0.5, -0.5, -0.5f}, {0.1f, 0.3f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},	// 20
+		{{-0.5, -0.5, 0.5f}, {0.5f, 0.3f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},	// 21
+		{{0.5, -0.5, 0.5f},  {0.3f, 0.5f, 0.1f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},	// 22
+		{{0.5, -0.5, -0.5f},{0.3f, 0.1f, 0.5f, 1.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},	// 23
+
+	};
+	std::vector<uint32_t> meshIndices1 =
+	{
+		//FRONT FACE
+		0, 1, 2,	//1st triangle
+		2, 3, 0,	//2nd triangle
+		////BACK FACE
+		4, 5, 6,
+		6, 7, 4,
+		////LEFT FACE
+		1, 0, 4,
+		4, 5, 1,
+		////RIGHT FACE
+		6, 7, 3,
+		3, 2, 6,
+		////TOP FACE
+		3, 7, 4,
+		4, 0, 3,
+		////BOTTOM FACE
+		2, 6, 5,
+		5, 1, 2
+	};
+	Mesh newMesh(mainDevice.physicalDevice, mainDevice.logicalDevice,
+		graphicsQueue, graphicsCommandPool, &meshVertices, &meshIndices1,
+		createTexture(texture));
+	models.push_back(MeshModel(std::vector<Mesh>{ newMesh }));
 	return models.size() - 1;
 }
 

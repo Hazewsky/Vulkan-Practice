@@ -31,7 +31,8 @@ public:
 	int init(GLFWwindow * newWindow);
 
 	int createMeshModel(std::string modelFile);
-
+	//TODO:: Create Primitive factory for creating primitives such as cube, sphere, etc
+	int createCube(std::string texture);
 	void updateModel(int modelId, glm::mat4 newModel);
 	void draw();
 	void cleanup();

@@ -143,7 +143,7 @@ Mesh MeshModel::LoadMesh(
 		//Go through face's indices and add to list
 		for (size_t j = 0; j < face.mNumIndices; j++)
 		{
-			indices.push_back(face.mIndices[i]);
+			indices.push_back(face.mIndices[j]);
 		}
 	}
 

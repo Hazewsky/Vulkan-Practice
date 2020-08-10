@@ -72,11 +72,14 @@ int main()
 	float deltaTime = 0.0f;
 	float lastTime = 0.0f;
 	
-	int firstModelId = vulkanRenderer.createMeshModel("Models/ChNPP_1000.obj");
-	glm::mat4 testMat = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0, 0.0f));
+	int firstModelId = vulkanRenderer.createMeshModel("Models/Neck_Mech_Walker_by_3DHaupt-(Wavefront OBJ).obj");
+	
+	
+	//int firstModelId = vulkanRenderer.createCube("TexturesCom_SignsNeon0046_S.jpg");
+	/*glm::mat4 testMat = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0, 0.0f));
 	testMat = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0, 0.0f));
-	vulkanRenderer.updateModel(firstModelId, testMat);
-
+	testMat = glm::translate(testMat, glm::vec3(0.0f, 0.0f, -25.0f));*/
+	//vulkanRenderer.updateModel(firstModelId, testMat);
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -91,8 +94,8 @@ int main()
 		glm::mat4 firstModel(1.0f);
 		/*glm::mat4 secondModel(1.0f);*/
 
-		firstModel = glm::translate(firstModel, glm::vec3(0.0f, 0.0f, -5.0f));
-		firstModel = glm::rotate(firstModel, glm::radians(angle * 5), glm::vec3(1.0f, 1.0f, 1.0f));
+		firstModel = glm::translate(firstModel, glm::vec3(0.0f, -2.0f, -5.0f));
+		firstModel = glm::rotate(firstModel, glm::radians(angle * 5), glm::vec3(0.0f, 1.0f, 0.0f));
 		vulkanRenderer.updateModel(firstModelId, firstModel);
 
 		/*secondModel = glm::translate(secondModel, glm::vec3(0.0f, 1.0f, -4.5f));
