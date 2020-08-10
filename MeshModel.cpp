@@ -32,7 +32,7 @@ glm::mat4 MeshModel::getModel()
 
 void MeshModel::setModel(glm::mat4 newModel)
 {
-	this->model = model;
+	model = newModel;
 }
 
 void MeshModel::destroyMeshModel()
@@ -73,7 +73,7 @@ std::vector<std::string> MeshModel::LoadMaterials(const aiScene* scene)
 			}
 		}
 	}
-	return std::vector<std::string>();
+	return textureList;
 }
 
 std::vector<Mesh> MeshModel::LoadNode(VkPhysicalDevice newPhysicalDevice, VkDevice newDevice, VkQueue transferQueue, VkCommandPool commandPool, aiNode* node, const aiScene* scene, std::vector<int> matToTex)
