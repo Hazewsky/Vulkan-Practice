@@ -162,6 +162,10 @@
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\secondShader.frag" />
+    <None Include="Shaders\secondShader.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

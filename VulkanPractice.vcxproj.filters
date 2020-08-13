@@ -42,4 +42,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\secondShader.vert" />
+    <None Include="Shaders\secondShader.frag" />
+  </ItemGroup>
 </Project>
