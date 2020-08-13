@@ -8,7 +8,7 @@ Implemented:
 4. Basic translucency; 
 5. Phong lighting model;
 6. Texture loading (std_image);
-7. Model loading (Assimp);
+7. Model loading (Assimp).
 
 TODO List (non-final):
 1. Blinn-Phong lighting model;
@@ -20,4 +20,6 @@ TODO List (non-final):
 7. Primitive factory;
 8. Nvidia RT;
 9. PBR system;
-10. More...
+10. Wireframe;
+11. Multiple viewports;
+12. More...
